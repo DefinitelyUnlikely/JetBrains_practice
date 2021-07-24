@@ -1,0 +1,116 @@
+list_of_tests = [("^tion$|tion", True),
+                 ("^tion$|tioner", False),
+                 ("^tion$|seduction", False),
+                 ("^ti.n$|tion", True),
+                 ("^ti.n$|tioner", False),
+                 ("^ti.n$|seduction", False),
+                 ("tion$|seduction", True),
+                 ("tion$|tioner", False),
+                 ("tion$|tion", True),
+                 ("ti.n$|seduction", True),
+                 ("ti.n$|tioner", False),
+                 ("ti.n$|tion", True),
+                 ("^tion|seduction", False),
+                 ("^tion|tioner", True),
+                 ("^tion|tion", True),
+                 ("^ti.n|seduction", False),
+                 ("^ti.n|tion", True),
+                 ("^ti.n|tioner", True),
+                 ("tion|tion", True),
+                 ("ti.n|tion", True),
+                 ("tion|seduction", True),
+                 ("tion|practioner", True),
+                 ("ti.n|seduction", True),
+                 ("ti.n|practioner", True),
+                 ("tion|tiopa", False),
+                 ("ti.n|Harley", False),
+                 ("|", True),
+                 ("|pass", True),
+                 ("A string|", False),
+                 ("ab+a|abba", True),
+                 ("ab+a|aba", True),
+                 ("ab+a|aa", False),
+                 ("ab*a|abba", True),
+                 ("ab*a|aba", True),
+                 ("ab*a|aa", True),
+                 ("ab?a|aa", True),
+                 ("ab?a|aba", True),
+                 ("ab?a|abba", False),]
+
+
+def regex_engine(regex_inp, string_inp):
+
+    def check_start_end(reg, check_string):
+        if reg[0] == "^" and reg[-1] == "$":
+            if len(reg[1:-1]) == len(check_string):
+                reg = reg[1:-1]
+        else:
+            if reg[0] == "^":
+                reg = reg[1:]
+                check_string = check_string[:len(reg)]
+
+            if reg[-1] == "$":
+                reg = reg[:-1]
+                check_string = check_string[-len(reg):]
+
+        return reg, check_string
+
+    def compare_strings(regex, string, plus=False, star=False, question=False):
+
+        # BASE CASE: Regex consumed and no false has been triggered. We're done
+        # and can return True.
+        if not regex:
+            return True
+
+        # BASE CASE: The regex is longer than the string.
+        # So we cannot have a match.
+        # We return False.
+        if regex and not string:
+            return False
+
+        # Recursion case: both the regex and string exists.
+        # if the first character of regex is the first character of string,
+        # we proceed with the recursion. If it's not, we make the string
+        # one character shorter. If the new string is a match, we go down.
+        # otherwise, we keep cutting the string. if the string is shorter
+        # than our regex, we're done and can return False.
+
+        if regex and string:
+            while len(string) >= len(regex):
+                if regex[0] == string[0] or regex[0] == ".":
+                    return compare_strings(regex[1:], string[1:])
+                string = string[1:]
+            return False
+
+    if regex_inp and string_inp:
+        checked_reg, checked_string = check_start_end(regex_inp, string_inp)
+    else:
+        checked_reg, checked_string = regex_inp, string_inp
+    return compare_strings(checked_reg, checked_string)
+
+
+# reg_str, string_to_comp = input().split("|")
+# print(regex_engine(reg_str, string_to_comp))
+
+# implement +, * and ? into the engine. This is the thing
+# I've dreaded. Think some about it and we start this tomorrow.
+
+# Debug: TODO: COMMENT OUT.
+# reg_str, string_to_comp = input().split("|")
+# print(regex_engine(reg_str, string_to_comp))
+
+for test, expected in list_of_tests:
+    reg_str, string_to_comp = test.split("|")
+    if regex_engine(reg_str, string_to_comp) == expected:
+        print(f"Test passed: {test}")
+    else:
+        print(f"Test failed: {test}")
+
+
+# Alright, how do we best implement +?
+# The + means "the previous character, once or more.
+# so, for each character in the regex, I should also
+# look one step ahead. Depending on the following character,
+# I need to take different courses of action. Here, I think I
+# might just want to use keywords, with True False. if the next
+#
