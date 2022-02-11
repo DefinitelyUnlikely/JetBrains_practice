@@ -1,0 +1,98 @@
+import sys
+import re
+import os
+
+
+def code_analyzer(path_to_analyze):
+
+    def check_length(i, text):
+        if len(text) > 79:
+            print(f"{file_path}: Line {i + 1}: S001 Too long")
+
+    def check_indentation(i, text):
+        if text.startswith(" "):
+            if len(re.search("^ +", text)[0]) % 4:
+                print(f"{file_path}: Line {i + 1}: S002 Indentation is not a multiple of four")
+
+    def check_semicolons(i, text):
+        if "#" in text:
+            text = text.split("#", maxsplit=1)[0]
+        text = re.sub("[\'\"].+[\'\"]", "", text)
+        if re.search(";", text):
+            print(f"{file_path}: Line {i + 1}: S003 Unnecessary semicolon")
+
+    def check_comments_space(i, text):
+        if "#" in text and text[0] != "#":  # own line comments shouldn't be caught.
+            text = text.split("#", maxsplit=1)[0]
+            if not re.search(" {2,}$", text):
+                print(f"{file_path}: Line {i + 1}: S004 At least two spaces required before inline comments")
+
+    def check_todo(i, text):
+        if "#" in text:
+            text = text.casefold().split("#", maxsplit=1)[1]
+            if re.search("todo", text):
+                print(f"{file_path}: Line {i + 1}: S005 TODO found")
+
+    def check_blank_lines(i):
+        if raw_code[i] != "\n" and raw_code[i - 1] == "\n" and raw_code[i - 2] == "\n" and raw_code[i - 3] == "\n":
+            print(f"{file_path}: Line {i + 1}: S006 More than two blank lines used before this line")
+
+    def check_construction_name_space(i, text):
+        if "#" in text:
+            text = text.split("#", maxsplit=1)[0]
+        if re.search("(def|class) {2,}", text):
+            print(f"{file_path}: Line {i + 1}: S007 Too many spaces after {re.search('(def|class) +(.+)', text)[1]}")
+
+    def check_class_case(i, text):
+        if "#" in text:
+            text = text.split("#", maxsplit=1)[0]
+        if re.search("class +[a-z].*:", text) or re.search("class +.*_.*:", text):
+            print(f"{file_path}: Line {i + 1}: S008 Class name {re.search('class +(.+)', text)[1]}"
+                  f" should be written in CamelCase")
+
+    def check_function_name(i, text):
+        if "#" in text:
+            text = text.split("#", maxsplit=1)[0]
+        if re.search("def +.*[A-Z].*:", text):
+            print(f"{file_path}: Line {i + 1}: S009 Function name {re.search('def +(.+)', text)[1]}"
+                  f" should be written in snake_case")
+
+    def check_line(index, line):
+
+        check_length(index, line)
+        check_indentation(index, line)
+        check_semicolons(index, line)
+        check_comments_space(index, line)
+        check_todo(index, line)
+        check_blank_lines(index)
+        check_construction_name_space(index, line)
+        check_class_case(index, line)
+        check_function_name(index, line)
+
+    # Check if we've been given a directory or a file
+    if os.path.isdir(path_to_analyze):
+        files = sorted(os.listdir(path_to_analyze))
+        head_path = path_to_analyze
+    else:
+        files = [os.path.basename(path_to_analyze)]
+        head_path = os.path.dirname(path_to_analyze)
+
+    for file in files:
+
+        if file.endswith(".py"):
+
+            file_path = os.path.join(head_path, file)
+
+            with open(file_path, "r") as analyze:
+                raw_code = analyze.readlines()
+
+            for index_of_line, code in enumerate(raw_code):
+                check_line(index_of_line, code)
+
+
+if __name__ == "__main__":
+    args = sys.argv
+    if len(args) != 2:
+        print("The script should be called with one argument, a file or a directory.")
+    else:
+        code_analyzer(args[1])
