@@ -216,8 +216,9 @@ class Flashcards(list):
 
     def mistakes_list(self):
         return sorted([(item.mistakes, item.term) for item in self], reverse=True)
-
-    def _exit(self):
+    
+    @staticmethod
+    def _exit():
         print("bye bye")
         logger.info("bye bye")
 
