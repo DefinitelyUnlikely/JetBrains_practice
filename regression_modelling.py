@@ -10,10 +10,9 @@ class CustomLinearRegression:
     def __init__(self, dataframe, fit_intercept=True, transpose=True):
         """
 
-        @param dataframe: a pandas.Dataframe. y-values (dependent variable) is last row. X-matrix (independent values)
-         are first rows.
+        @param dataframe: a pandas.Dataframe. y-values (dependent variable) is last row/column.
         @param fit_intercept: specify if intercept is part of modelling or not. default is True.
-        @param transpose: If dataframe has variable data in rows, keep default. If y in separate column, set as False.
+        @param transpose: If variables comes in rows, set as True (default). If variables comes in columns, set as False.
         """
         self.fit_intercept = fit_intercept
 
