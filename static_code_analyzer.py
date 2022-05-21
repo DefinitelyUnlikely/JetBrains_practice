@@ -70,13 +70,6 @@ def code_analyzer(path_to_analyze):
             return True
         return False
 
-    # def check_function_name(text):
-    #     if "#" in text:
-    #         text = text.split("#", maxsplit=1)[0]
-    #     if re.search("def +.*[A-Z].*:", text):
-    #         return True
-    #     return False
-
     def check_line(index, line):
 
         if check_length(line):
@@ -105,10 +98,6 @@ def code_analyzer(path_to_analyze):
         if check_class_case(line):
             found_errors.append(f"{file_path}: Line {index + 1}: S008 Class name {re.search('class +(.+)', line)[1]}"
                                 f" should be written in CamelCase")
-
-        # if check_function_name(line):
-        #     found_errors.append(f"{file_path}: Line {index + 1}: S009 Function name {re.search('def +(.+)', line)[1]}"
-        #                         f" should be written in snake_case")
 
     if os.path.isdir(path_to_analyze):
         files = os.listdir(path_to_analyze)
