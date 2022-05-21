@@ -9,8 +9,7 @@ sorted_by_bus_id = sorted(json_data, key=lambda d: d['bus_id'])
 
 
 def check_data(data):
-    # Initialize errors as a Counter, to prevent key errors. can't for loop print as it's sorted but can be
-    # circumvented by a keys list when printing.
+    # Initialize errors as a Counter, to prevent key errors.
     errors = Counter()
     total = 0
     i = 0
